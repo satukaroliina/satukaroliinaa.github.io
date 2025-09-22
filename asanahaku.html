@@ -4,12 +4,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="style.css">
     <title>Asanahaku</title>
+    <link rel="stylesheet" href="style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap');
-    </style>
 </head>
 
 <body>
@@ -33,35 +30,89 @@
 
     <main>
         <div class="container py-5">
+            <h1 class="otsikko">Asanahaku</h1>
+            <p>Voit hakea asanaa englannin tai sanskritin kielisellä nimellä.</p>
+            <div class="mb-3">
+                <label for="asanaName" class="form-label"></label>
+                <input type="text" id="asanaName" class="form-control" placeholder="Hae asanaa...">
+                <button id="searchBtn" class="btn btn-primary mt-2">Hae</button>
+            </div>
+
             <div id="vastaus"></div>
-            <script>
-                function kerro(data) {
-                    var teksti = "";
-                    teksti = "<h1>" + data.english_name + "</h1>";
-                    teksti = teksti + "<p><img src=" + data.url_png + " width=80% ></p>"
-
-                    document.getElementById("vastaus").innerHTML = teksti;
-                }
-
-                fetch('https://satukaroliinaa.github.io/asanat.json')
-                    .then(function (response) {
-                        return response.json();
-                    })
-                    .then(function (responseJson) {
-                        kerro(responseJson);
-                    })
-                    .catch(function (error) {
-                        document.getElementById("vastaus").innerHTML = "<p>Tietoa ei pystytä hakemaan</p>";
-                    })
-            </script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
         </div>
-
-
     </main>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let kaikkiAsanat = [];
 
+        fetch("https://raw.githubusercontent.com/satukaroliina/satukaroliinaa.github.io/main/asanat.json")
+            .then(response => response.json())
+            .then(data => {
+                kaikkiAsanat = data;
+            })
+            .catch(error => {
+                document.getElementById("vastaus").innerHTML = "<p>Tietoa ei pystytä hakemaan</p>";
+                console.error(error);
+            });
+
+        document.getElementById("searchBtn").addEventListener("click", () => {
+            const hakusana = document.getElementById("asanaName").value.trim().toLowerCase();
+            const tulosDiv = document.getElementById("vastaus");
+            tulosDiv.innerHTML = "";
+
+            if (!hakusana) return;
+
+            if (!Array.isArray(kaikkiAsanat)) {
+                tulosDiv.textContent = "Asanatietoja ei ole ladattu vielä.";
+                return;
+            }
+
+            const suodatetut = kaikkiAsanat.filter(asana =>
+                asana.english_name.toLowerCase().includes(hakusana) ||
+                asana.sanskrit_name_adapted.toLowerCase().includes(hakusana) ||
+                (asana.translation_name && asana.translation_name.toLowerCase().includes(hakusana)) ||
+                (asana.pose_description && asana.pose_description.toLowerCase().includes(hakusana))
+            );
+
+            if (suodatetut.length === 0) {
+                tulosDiv.textContent = "Ei löytynyt asanoja.";
+                return;
+            }
+
+            suodatetut.forEach(asana => {
+                const div = document.createElement("div");
+                div.classList.add("card", "shadow-sm", "mb-4");
+
+                div.innerHTML = `
+                    <div class="row g-0">
+                        <div class="col-md-4 text-center">
+                            <img src="${asana.url_png}" alt="Kuva: ${asana.english_name}" class="img-fluid rounded-start p-2" style="max-height: 200px;">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">${asana.english_name} <small class="text-muted">(${asana.sanskrit_name_adapted})</small></h5>
+                                <p class="card-text">${asana.translation_name || "–"}</p>
+                                <p class="card-text">${asana.pose_description}</p>
+                                <p class="card-text"><strong>Benefits:</strong> ${asana.pose_benefits}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                tulosDiv.appendChild(div);
+            });
+
+            document.getElementById("asanaName").value = "";
+        });
+
+        document.getElementById("asanaName").addEventListener("keypress", function (e) {
+            if (e.key === "Enter") {
+                document.getElementById("searchBtn").click();
+            }
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

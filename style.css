@@ -1,0 +1,78 @@
+.custom-navbar {
+    background: url("kuvat/yoga-1313116_1920.jpg") center/cover no-repeat;
+    min-height: 350px;
+    /* navbarin korkeus */
+    position: relative;
+    z-index: 10;
+}
+
+/* Tumma läpikuultava overlay kuvan päälle */
+.custom-navbar::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    /* 40% tumma kerros */
+    z-index: -1;
+}
+
+.brand-logo {
+    height: 250px;
+    /* logon korkeus */
+    width: auto;
+    /* säilyttää mittasuhteet */
+}
+
+.navbar-toggler {
+    border: none;
+}
+
+.custom-navbar .nav-link {
+    color: white !important;
+    /* valkoinen teksti */
+    font-size: 1rem;
+    /* vähän isompi fontti */
+    font-weight: 500;
+    /* puolilihavoitu */
+    letter-spacing: 0.7px;
+    /* pientä ilmavuutta */
+    padding: 10px 25px;
+    /* lisää tilaa ympärille */
+    border-radius: 25px;
+    /* pyöristetyt kulmat */
+    transition: all 0.3s ease;
+    /* sulava hover-efekti */
+}
+
+.custom-navbar .nav-link:hover,
+.custom-navbar .nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    /* läpikuultava tausta hoverissa */
+    color: #b6ccfe !important;
+    /* kultainen teksti */
+}
+
+.index-image {
+    width: 100%;
+    /* kuva venyy koko ruudun leveydelle */
+    height: auto;
+    /* säilyttää mittasuhteet */
+    border-radius: 10px;
+    /* pyöristetyt kulmat, valinnainen */
+    margin-bottom: 20px;
+    /* tilaa kuvan ja tekstin väliin */
+}
+
+.quicksand-uniquifier {
+    font-family: "Quicksand", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+}
+
+h1 {
+    font-family: "Quicksand", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+}
